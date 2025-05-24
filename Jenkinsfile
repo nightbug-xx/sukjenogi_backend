@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://gitea.biryu2000.kr/nightbug/sukjenogi-backend.git', branch: 'master'
+                checkout scm
             }
         }
 
