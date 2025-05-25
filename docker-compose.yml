@@ -6,8 +6,8 @@ services:
     container_name: sukjenogi-backend
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
+#    volumes:
+#      - .:/app
     environment:
       - DATABASE_URL=postgresql://sukje_user:sukje_pass@host.docker.internal:5432/sukjenogi_db
 volumes:
