@@ -6,12 +6,17 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                // 필요한 경우 워크스페이스 초기화
+                deleteDir()
+                git credentialsId: 'nightbug', url: 'https://gitea.biryu2000.kr/nightbug/sukjenogi-backend.git', branch: 'master'
+            }
+        }
+
         stage('Build & Deploy') {
             steps {
-                echo '🔄 기존 컨테이너 중지 중...'
-                sh 'docker compose down'
-
-                echo '🚀 새 이미지 빌드 및 컨테이너 실행 중...'
+                sh 'docker compose down || true' // 실패해도 계속
                 sh 'docker compose up -d --build'
             }
         }
