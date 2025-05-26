@@ -28,3 +28,16 @@ class CharacterUpdateRequest(BaseModel):
     name: constr(min_length=1)
     server: constr(min_length=1)
     power: conint(ge=0)  # 0 이상 정수
+
+class CharacterDetailResponse(BaseModel):
+    id: int
+    name: str
+    server: str
+    combat_power: int
+    user_id: int
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {
+        "from_attributes": True
+    }

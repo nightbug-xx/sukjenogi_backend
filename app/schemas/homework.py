@@ -35,3 +35,17 @@ class HomeworkTypeUpdateRequest(BaseModel):
     description: str | None = None
     repeat_type: constr(min_length=1)
     repeat_count: conint(ge=1)
+
+class HomeworkTypeDetailResponse(BaseModel):
+    id: int
+    user_id: int
+    title: str
+    description: str | None
+    reset_type: str
+    reset_time: time
+    clear_count: int
+    created_at: datetime
+
+    model_config = {
+        "from_attributes": True
+    }
