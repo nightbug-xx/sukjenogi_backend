@@ -1,5 +1,8 @@
 #pp/main.py
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
+from app.core.deps import get_current_user
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 import traceback
@@ -8,15 +11,33 @@ from app.api import user, auth, character, homework, character_homework, dashboa
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
+# app = FastAPI(
+#     title="숙제노기 API",
+#     description="마비노기 모바일 숙제 관리용 백엔드 API",
+#     version="0.1.0",
+#     docs_url="/docs",
+#     redoc_url=None,
+#     openapi_url="/openapi.json",
+#     root_path="/api"
+# )
+
 app = FastAPI(
-    title="숙제노기 API",
-    description="마비노기 모바일 숙제 관리용 백엔드 API",
-    version="0.1.0",
-    docs_url="/docs",
+    docs_url=None,
     redoc_url=None,
-    openapi_url="/openapi.json",
-    root_path="/api"
+    openapi_url=None
 )
+
+@app.get("/docs", include_in_schema=False)
+def custom_docs(user=Depends(get_current_user)):
+    return get_swagger_ui_html(openapi_url="/openapi.json", title="Sukjenogi API Docs")
+
+@app.get("/openapi.json", include_in_schema=False)
+def custom_openapi(user=Depends(get_current_user)):
+    return get_openapi(
+        title="Sukjenogi API",
+        version="0.2",
+        routes=app.routes
+    )
 
 @app.middleware("http")
 async def log_exceptions_middleware(request: Request, call_next):
