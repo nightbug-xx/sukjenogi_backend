@@ -1,12 +1,12 @@
 from datetime import datetime, time
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.deps import get_db, get_current_user
 from app.models.homework import HomeworkType
 from app.models.user import User
-from app.schemas.homework import HomeworkTypeCreate, HomeworkTypeResponse
+from app.schemas.homework import HomeworkTypeCreate, HomeworkTypeResponse, HomeworkTypeUpdateRequest
 from app.crud.homework import create_homework_type, get_homework_types_by_user
 
 router = APIRouter()
@@ -37,3 +37,42 @@ def list_homework_types(
     current_user: User = Depends(get_current_user)
 ):
     return get_homework_types_by_user(current_user.id, db)
+
+@router.put("/{homework_type_id}")
+def update_homework_type(
+    homework_type_id: int,
+    req: HomeworkTypeUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    current_user = db.merge(current_user)
+
+    homework_type = db.query(HomeworkType).filter(HomeworkType.id == homework_type_id).first()
+
+    if not homework_type or homework_type.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="권한이 없습니다.")
+
+    homework_type.name = req.name
+    homework_type.description = req.description
+    homework_type.repeat_type = req.repeat_type
+    homework_type.repeat_count = req.repeat_count
+
+    db.commit()
+    return {"message": "숙제가 수정되었습니다."}
+
+@router.delete("/{homework_type_id}")
+def delete_homework_type(
+    homework_type_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    current_user = db.merge(current_user)
+
+    homework_type = db.query(HomeworkType).filter(HomeworkType.id == homework_type_id).first()
+
+    if not homework_type or homework_type.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="권한이 없습니다.")
+
+    db.delete(homework_type)
+    db.commit()
+    return {"message": "숙제가 삭제되었습니다."}

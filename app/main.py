@@ -1,7 +1,8 @@
 #pp/main.py
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
+import traceback
 
 from app.api import user, auth, character, homework, character_homework, dashboard
 
@@ -17,13 +18,23 @@ app = FastAPI(
     root_path="/api"
 )
 
+@app.middleware("http")
+async def log_exceptions_middleware(request: Request, call_next):
+    try:
+        response = await call_next(request)
+        return response
+    except Exception as exc:
+        print("❌ 전역 예외 발생:")
+        traceback.print_exc()
+        raise
+
 origins = [
     "https://sukjenogi.biryu2000.kr",  # 프론트 도메인
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

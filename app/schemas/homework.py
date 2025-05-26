@@ -1,6 +1,6 @@
 # app/schemas/homework.py
 
-from pydantic import BaseModel
+from pydantic import BaseModel, constr, conint
 from datetime import time, datetime
 from typing import Optional
 
@@ -29,3 +29,9 @@ class HomeworkSelectableResponse(BaseModel):
     assigned: str  # 'Y' or 'N'
     reset_type: str
     clear_count: int
+
+class HomeworkTypeUpdateRequest(BaseModel):
+    name: constr(min_length=1)
+    description: str | None = None
+    repeat_type: constr(min_length=1)
+    repeat_count: conint(ge=1)

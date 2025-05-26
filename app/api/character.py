@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.schemas.character import CharacterCreate, CharacterResponse
+from app.schemas.character import CharacterCreate, CharacterResponse, CharacterUpdateRequest
 from app.schemas.homework import HomeworkSelectableResponse
 from app.crud.character import create_character, get_characters_by_user
 from app.services.character_homework_service import get_homeworks_with_assignment_status, assign_homework_to_character, unassign_homework_from_character
@@ -60,3 +60,36 @@ def unassign_homework(
     current_user: User = Depends(get_current_user)
 ):
     return unassign_homework_from_character(db, current_user.id, character_id, homework_type_id)
+
+@router.put("/{character_id}")
+def update_character(
+    character_id: int,
+    req: CharacterUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    character = db.query(Character).filter(Character.id == character_id).first()
+
+    if not character or character.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="권한이 없습니다.")
+
+    character.name = req.name
+    character.server = req.server
+    character.power = req.power
+    db.commit()
+    return {"message": "캐릭터가 수정되었습니다."}
+
+@router.delete("/{character_id}")
+def delete_character(
+    character_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    character = db.query(Character).filter(Character.id == character_id).first()
+
+    if not character or character.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="권한이 없습니다.")
+
+    db.delete(character)
+    db.commit()
+    return {"message": "캐릭터가 삭제되었습니다."}

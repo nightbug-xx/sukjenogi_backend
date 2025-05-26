@@ -1,6 +1,6 @@
 # app/schemas/character.py
 
-from pydantic import BaseModel
+from pydantic import BaseModel, constr, conint
 from typing import Optional
 from datetime import datetime
 
@@ -23,3 +23,8 @@ class CharacterResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class CharacterUpdateRequest(BaseModel):
+    name: constr(min_length=1)
+    server: constr(min_length=1)
+    power: conint(ge=0)  # 0 이상 정수
