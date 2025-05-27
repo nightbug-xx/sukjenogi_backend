@@ -6,7 +6,6 @@ RUN apt update && \
     apt install -y tzdata && \
     ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime && \
     echo "Asia/Seoul" > /etc/timezone && \
-    pip install --no-cache-dir -r requirements.txt && \
     apt clean
 
 WORKDIR /app
