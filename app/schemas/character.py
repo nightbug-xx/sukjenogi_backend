@@ -41,3 +41,7 @@ class CharacterDetailResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class CharacterOrderUpdate(BaseModel):
+    id: int
+    order: int

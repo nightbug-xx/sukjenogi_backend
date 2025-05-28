@@ -12,7 +12,7 @@ def get_dashboard_characters(db: Session, user_id: int):
         db.query(Character.id.label("character_id"), Character.name.label("character_name"), Character.server)
         .join(subq, Character.id == subq.c.character_id)
         .filter(Character.user_id == user_id)
-        .order_by(Character.id)
+        .order_by(Character.order.asc())
         .all()
     )
 
@@ -40,7 +40,7 @@ def get_dashboard_homeworks_for_character(db: Session, user_id: int, character_i
         )
         .join(CharacterHomework, CharacterHomework.homework_type_id == HomeworkType.id)
         .filter(CharacterHomework.character_id == character_id)
-        .order_by(HomeworkType.id)
+        .order_by(HomeworkType.order.asc())
         .all()
     )
 

@@ -24,7 +24,7 @@ def get_homeworks_with_assignment_status(db: Session, user_id: int, character_id
             (CharacterHomework.character_id == character_id)
         )
         .where(HomeworkType.user_id == user_id)
-        .order_by(HomeworkType.id)
+        .order_by(HomeworkType.order.asc())
     )
 
     return db.execute(stmt).mappings().all()

@@ -20,6 +20,8 @@ class Character(Base):
     user = relationship("User", back_populates="characters")
     homeworks = relationship("CharacterHomework", back_populates="character", cascade="all, delete")
 
+    order = Column(Integer, default=0)
+
 
 class CharacterHomework(Base):
     __tablename__ = "character_homeworks"

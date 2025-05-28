@@ -18,3 +18,5 @@ class HomeworkType(Base):
 
     user = relationship("User", back_populates="homework_types")
     assigned_characters = relationship("CharacterHomework", back_populates="homework_type", cascade="all, delete")
+
+    order = Column(Integer, default=0)

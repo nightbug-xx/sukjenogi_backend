@@ -40,4 +40,4 @@ def create_character(user_id: int, character_data: CharacterCreate, db: Session)
     return character
 
 def get_characters_by_user(user_id: int, db: Session):
-    return db.query(Character).filter(Character.user_id == user_id).all()
+    return db.query(Character).filter(Character.user_id == user_id).order_by(Character.order.asc()).all()

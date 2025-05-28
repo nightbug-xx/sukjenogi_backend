@@ -15,4 +15,4 @@ def create_homework_type(user_id: int, data: HomeworkTypeCreate, db: Session):
     return new_homework
 
 def get_homework_types_by_user(user_id: int, db: Session):
-    return db.query(HomeworkType).filter(HomeworkType.user_id == user_id).all()
+    return db.query(HomeworkType).filter(HomeworkType.user_id == user_id).order_by(HomeworkType.order.asc()).all()

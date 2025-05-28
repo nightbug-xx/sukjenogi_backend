@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.schemas.character import CharacterCreate, CharacterResponse, CharacterUpdateRequest, CharacterDetailResponse
+from app.schemas.character import CharacterCreate, CharacterResponse, CharacterUpdateRequest, CharacterDetailResponse, CharacterOrderUpdate
 from app.schemas.homework import HomeworkSelectableResponse
 from app.crud.character import create_character, get_characters_by_user
 from app.services.character_homework_service import get_homeworks_with_assignment_status, assign_homework_to_character, unassign_homework_from_character
@@ -108,3 +108,18 @@ def get_character(
         raise HTTPException(status_code=403, detail="권한이 없습니다.")
 
     return character
+
+@router.patch("/order")
+def update_character_order(
+    updates: List[CharacterOrderUpdate],
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user),
+):
+    for update in updates:
+        character = db.query(Character).filter_by(id=update.id, user_id=user.id).first()
+        if character:
+            character.order = update.order
+            character.order = update.order
+            db.add(character)
+    db.commit()
+    return {"status": "ok"}

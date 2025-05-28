@@ -6,7 +6,7 @@ from typing import List
 from app.core.deps import get_db, get_current_user
 from app.models.homework import HomeworkType
 from app.models.user import User
-from app.schemas.homework import HomeworkTypeCreate, HomeworkTypeResponse, HomeworkTypeUpdateRequest, HomeworkTypeDetailResponse
+from app.schemas.homework import HomeworkTypeCreate, HomeworkTypeResponse, HomeworkTypeUpdateRequest, HomeworkTypeDetailResponse, HomeworkTypeOrderUpdate
 from app.crud.homework import create_homework_type, get_homework_types_by_user
 
 router = APIRouter()
@@ -91,3 +91,17 @@ def get_homework_type(
         raise HTTPException(status_code=403, detail="권한이 없습니다.")
 
     return homework_type
+
+@router.patch("/order")
+def update_homework_type_order(
+    updates: List[HomeworkTypeOrderUpdate],
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    for update in updates:
+        hw_type = db.query(HomeworkType).filter_by(id=update.id, user_id=user.id).first()
+        if hw_type and hw_type.order != update.order:
+            hw_type.order = update.order
+            db.add(hw_type)
+    db.commit()
+    return {"status": "ok"}

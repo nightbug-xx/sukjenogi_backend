@@ -49,3 +49,7 @@ class HomeworkTypeDetailResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class HomeworkTypeOrderUpdate(BaseModel):
+    id: int
+    order: int
