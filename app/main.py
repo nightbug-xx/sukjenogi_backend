@@ -51,11 +51,13 @@ async def log_exceptions_middleware(request: Request, call_next):
 
 origins = [
     "https://sukjenogi.biryu2000.kr",  # 프론트 도메인
+    "https://sukjenogi.com",  # 프론트 도메인
+    "https://www.sukjenogi.com",  # 프론트 도메인
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
