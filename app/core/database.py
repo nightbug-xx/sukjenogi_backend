@@ -22,5 +22,3 @@ def get_db():
     finally:
         db.close()
 
-# 세션 클래스 생성
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
