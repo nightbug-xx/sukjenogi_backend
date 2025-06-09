@@ -1,7 +1,6 @@
 # app/core/config.py
 
 from pydantic_settings import BaseSettings
-from sqlalchemy.orm import declarative_base
 
 class Settings(BaseSettings):
     database_url: str
@@ -14,6 +13,4 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# 베이스 클래스
-Base = declarative_base()
 
