@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.core.database import Base
 import enum
-from app.models.user import User
 
 class FriendRequestStatus(enum.Enum):
     pending = "pending"
@@ -11,20 +10,19 @@ class FriendRequestStatus(enum.Enum):
     rejected = "rejected"
     cancelled = "cancelled"
 
-
 class FriendRequest(Base):
     __tablename__ = "friend_requests"
 
     id = Column(Integer, primary_key=True, index=True)
-    from_user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    to_user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    from_user_id = Column(Integer, ForeignKey("users.id"))
+    to_user_id = Column(Integer, ForeignKey("users.id"))
     status = Column(Enum(FriendRequestStatus), default=FriendRequestStatus.pending, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow)
 
-    from_user = relationship(User, foreign_keys=[from_user_id])
-    to_user = relationship(User, foreign_keys=[to_user_id])
-
+    # 🔽 문자열로 참조
+    from_user = relationship("User", foreign_keys=[from_user_id], back_populates="sent_requests")
+    to_user = relationship("User", foreign_keys=[to_user_id], back_populates="received_requests")
 
 class Friend(Base):
     __tablename__ = "friends"
@@ -39,5 +37,5 @@ class Friend(Base):
         CheckConstraint("user_id_1 < user_id_2", name="check_user_order"),
     )
 
-    user1 = relationship(User, foreign_keys=[user_id_1])
-    user2 = relationship(User, foreign_keys=[user_id_2])
+    user1 = relationship("User", foreign_keys=[user_id_1], back_populates="friendships1")
+    user2 = relationship("User", foreign_keys=[user_id_2], back_populates="friendships2")

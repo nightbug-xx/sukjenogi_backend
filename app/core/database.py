@@ -10,6 +10,8 @@ engine = create_engine(settings.database_url, echo=True, future=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+import app.models  # ✅ 그대로 유지
+
 @event.listens_for(Engine, "handle_error")
 def receive_handle_error(exception_context):
     print("🔥 SQLAlchemy DB 에러 감지!")

@@ -1,4 +1,5 @@
 #pp/main.py
+from app.models import User, Character, HomeworkType, Friend, FriendRequest  # 👈 명시적 import!
 from fastapi import FastAPI, Request, Depends
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
@@ -6,7 +7,6 @@ from app.core.deps import get_current_user
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 import traceback
-from app.models import user, friend, character, homework
 
 from app.api import user, auth, character, homework, character_homework, dashboard, friend
 
