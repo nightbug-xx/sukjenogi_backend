@@ -2,21 +2,13 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from app.core.database import SessionLocal
+from app.core.deps import get_db
 from app.models.user import User
 from app.core.security import verify_password, create_access_token
 from pydantic import BaseModel, EmailStr
 from datetime import timedelta
 
 router = APIRouter()
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 # 로그인 요청 스키마
