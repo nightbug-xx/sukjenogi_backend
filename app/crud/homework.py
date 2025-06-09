@@ -5,7 +5,9 @@ from app.schemas.homework import HomeworkTypeCreate
 def create_homework_type(user_id: int, data: HomeworkTypeCreate, db: Session):
     new_homework = HomeworkType(
         user_id=user_id,
-        name=data.name,
+        title=data.title,
+        description=data.description,
+        reset_type=data.reset_type,
         reset_time=data.reset_time,
         clear_count=data.clear_count,
     )

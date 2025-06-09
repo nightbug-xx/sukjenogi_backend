@@ -31,10 +31,10 @@ class HomeworkSelectableResponse(BaseModel):
     clear_count: int
 
 class HomeworkTypeUpdateRequest(BaseModel):
-    name: constr(min_length=1)
+    title: constr(min_length=1)
     description: str | None = None
-    repeat_type: constr(min_length=1)
-    repeat_count: conint(ge=1)
+    reset_type: constr(min_length=1)
+    clear_count: conint(ge=1)
 
 class HomeworkTypeDetailResponse(BaseModel):
     id: int

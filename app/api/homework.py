@@ -52,10 +52,10 @@ def update_homework_type(
     if not homework_type or homework_type.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="권한이 없습니다.")
 
-    homework_type.name = req.name
+    homework_type.title = req.title
     homework_type.description = req.description
-    homework_type.repeat_type = req.repeat_type
-    homework_type.repeat_count = req.repeat_count
+    homework_type.reset_type = req.reset_type
+    homework_type.clear_count = req.clear_count
 
     db.commit()
     return {"message": "숙제가 수정되었습니다."}
