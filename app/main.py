@@ -6,38 +6,39 @@ from app.core.deps import get_current_user
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 import traceback
+from app.models import user, friend, character, homework
 
-from app.api import user, auth, character, homework, character_homework, dashboard
+from app.api import user, auth, character, homework, character_homework, dashboard, friend
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
-# app = FastAPI(
-#     title="숙제노기 API",
-#     description="마비노기 모바일 숙제 관리용 백엔드 API",
-#     version="0.1.0",
-#     docs_url="/docs",
-#     redoc_url=None,
-#     openapi_url="/openapi.json",
-#     root_path="/api"
-# )
-
 app = FastAPI(
-    docs_url=None,
+    title="숙제노기 API",
+    description="마비노기 모바일 숙제 관리용 백엔드 API",
+    version="0.1.0",
+    docs_url="/docs",
     redoc_url=None,
-    openapi_url=None
+    openapi_url="/openapi.json",
+    root_path="/api"
 )
 
-@app.get("/docs", include_in_schema=False)
-def custom_docs(user=Depends(get_current_user)):
-    return get_swagger_ui_html(openapi_url="/openapi.json", title="Sukjenogi API Docs")
-
-@app.get("/openapi.json", include_in_schema=False)
-def custom_openapi(user=Depends(get_current_user)):
-    return get_openapi(
-        title="Sukjenogi API",
-        version="0.2",
-        routes=app.routes
-    )
+# app = FastAPI(
+#     docs_url=None,
+#     redoc_url=None,
+#     openapi_url=None
+# )
+#
+# @app.get("/docs", include_in_schema=False)
+# def custom_docs(user=Depends(get_current_user)):
+#     return get_swagger_ui_html(openapi_url="/openapi.json", title="Sukjenogi API Docs")
+#
+# @app.get("/openapi.json", include_in_schema=False)
+# def custom_openapi(user=Depends(get_current_user)):
+#     return get_openapi(
+#         title="Sukjenogi API",
+#         version="0.2",
+#         routes=app.routes
+#     )
 
 @app.middleware("http")
 async def log_exceptions_middleware(request: Request, call_next):
@@ -57,7 +58,8 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    # allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -69,6 +71,7 @@ app.include_router(character.router, prefix="/characters", tags=["Characters"])
 app.include_router(homework.router, prefix="/homeworks", tags=["Homeworks"])
 app.include_router(character_homework.router, prefix="/characterHomework", tags=["Character Homeworks"])
 app.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
+app.include_router(friend.router, prefix="/friends", tags=["Friends"])
 
 @app.get("/")
 def read_root():

@@ -20,3 +20,19 @@ class PasswordUpdateRequest(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserPublicInfoResponse(BaseModel):
+    id: int
+    email: str
+    is_friend: bool
+    request_sent: bool
+    request_received: bool
+
+class UserByCharacterResponse(BaseModel):
+    user_id: int
+    email: str
+    character_id: int
+    character_name: str
+    server: str
+    is_public: bool

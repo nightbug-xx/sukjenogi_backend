@@ -22,6 +22,8 @@ class Character(Base):
 
     order = Column(Integer, default=0)
 
+    is_public = Column(Boolean, default=False, nullable=False)
+
 
 class CharacterHomework(Base):
     __tablename__ = "character_homeworks"

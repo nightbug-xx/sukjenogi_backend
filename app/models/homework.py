@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Time, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Time, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from datetime import time, datetime
 
@@ -20,3 +20,5 @@ class HomeworkType(Base):
     assigned_characters = relationship("CharacterHomework", back_populates="homework_type", cascade="all, delete")
 
     order = Column(Integer, default=0)
+
+    is_public = Column(Boolean, default=False, nullable=False)

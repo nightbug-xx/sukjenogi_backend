@@ -1,16 +1,17 @@
 # app/api/user.py
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.logger import logger
 import traceback
 import sys
 from sqlalchemy.orm import Session
-from app.schemas.user import UserCreate, UserResponse, PasswordUpdateRequest
+from app.schemas.user import UserCreate, UserResponse, PasswordUpdateRequest, UserPublicInfoResponse, UserByCharacterResponse
 from app.crud.user import create_user
 from app.models.user import User
 from app.core.database import SessionLocal
 from app.core.deps import get_current_user
 from app.core.security import verify_password, get_password_hash
+from app.services import user_service
 
 router = APIRouter()
 
@@ -57,3 +58,19 @@ def update_password(
         logger.error(f"❌ 비밀번호 변경 중 예외 발생: {e}")
         traceback.print_exc(file=sys.stdout)  # ← 여기가 핵심
         raise
+
+@router.get("/public-info", response_model=UserPublicInfoResponse)
+def get_public_info(
+        email: str = Query(...),
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+):
+    return user_service.get_user_public_info(db, current_user.id, email)
+
+@router.get("/by-character", response_model=UserByCharacterResponse)
+def get_by_character(
+    server: str,
+    name: str,
+    db: Session = Depends(get_db)
+):
+    return user_service.get_user_by_character(db, server, name)
