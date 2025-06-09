@@ -4,7 +4,8 @@ from app.core.config import Base
 from app.core.database import engine
 from app.models.user import User
 from app.models.character import Character
-from app.models.homework import HomeworkType, CharacterHomework
+from app.models.homework import HomeworkType
+from app.models.character import CharacterHomework
 
 print("📦 DB 테이블 생성 중...")
 Base.metadata.create_all(bind=engine)
