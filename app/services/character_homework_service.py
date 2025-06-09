@@ -117,36 +117,3 @@ def update_homework_completion(
     db.commit()
     return {"message": "숙제 완료 상태가 업데이트되었습니다."}
 
-def update_homework_completion(
-    db: Session,
-    user_id: int,
-    character_id: int,
-    homework_type_id: int,
-    new_complete_cnt: int
-):
-    character = db.query(Character).filter_by(id=character_id, user_id=user_id).first()
-    if not character:
-        raise HTTPException(status_code=404, detail="캐릭터가 없습니다.")
-
-    homework = db.query(HomeworkType).filter_by(id=homework_type_id, user_id=user_id).first()
-    if not homework:
-        raise HTTPException(status_code=404, detail="숙제를 찾을 수 없습니다.")
-
-    ch = db.query(CharacterHomework).filter_by(
-        character_id=character_id,
-        homework_type_id=homework_type_id
-    ).first()
-
-    if not ch:
-        raise HTTPException(status_code=404, detail="지정된 숙제가 없습니다.")
-
-    if new_complete_cnt > homework.clear_count:
-        raise HTTPException(status_code=400, detail="완료 횟수가 숙제 클리어 기준을 초과했습니다.")
-
-    ch.complete_cnt = new_complete_cnt
-    ch.last_completed_at = datetime.utcnow()
-    ch.updated_at = datetime.utcnow()
-    ch.is_done = (new_complete_cnt == homework.clear_count)
-
-    db.commit()
-    return {"message": "숙제 완료 상태가 업데이트되었습니다."}
