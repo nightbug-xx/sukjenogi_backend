@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Time, ForeignKey, DateTime, Bool
 from sqlalchemy.orm import relationship
 from datetime import time, datetime
 
-from app.core.config import Base
+from app.core.database import Base
 
 class HomeworkType(Base):
     __tablename__ = "homework_types"

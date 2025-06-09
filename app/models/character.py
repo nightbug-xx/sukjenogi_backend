@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, func
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from app.core.config import Base
+from app.core.database import Base
 
 
 class Character(Base):

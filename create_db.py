@@ -1,7 +1,6 @@
 # create_db.py
 
-from app.core.config import Base
-from app.core.database import engine
+from app.core.database import Base, engine
 from app.models.user import User
 from app.models.character import Character
 from app.models.homework import HomeworkType, CharacterHomework
