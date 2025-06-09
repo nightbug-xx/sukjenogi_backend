@@ -75,7 +75,7 @@ def update_character(
 
     character.name = req.name
     character.server = req.server
-    character.power = req.power
+    character.combat_power = req.power
     db.commit()
     return {"message": "캐릭터가 수정되었습니다."}
 
