@@ -139,7 +139,9 @@ def get_friend_list(db: Session, user_id: int):
     result = []
     for f in friends:
         friend_id = f.user_id_2 if f.user_id_1 == user_id else f.user_id_1
-        result.append(friend_id)
+        friend = db.query(User).filter(User.id == friend_id).first()
+        friend_email = friend.email if friend else None
+        result.append({"id": friend_id, "email": friend_email})
 
     return result
 

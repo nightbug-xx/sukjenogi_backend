@@ -36,3 +36,11 @@ class FriendResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class FriendListItem(BaseModel):
+    id: int
+    email: str
+
+    class Config:
+        orm_mode = True
