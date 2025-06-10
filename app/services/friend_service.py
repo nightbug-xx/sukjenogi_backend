@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
+from sqlalchemy import select
 from app.models.friend import FriendRequest, Friend, FriendRequestStatus
 from app.models.user import User
 from app.models.character import Character, CharacterHomework
@@ -44,17 +45,51 @@ def send_friend_request(db: Session, from_user_id: int, to_user_email: str):
 
 
 def get_received_requests(db: Session, user_id: int):
-    return db.query(FriendRequest).filter(
-        FriendRequest.to_user_id == user_id,
-        FriendRequest.status == FriendRequestStatus.pending
-    ).all()
+    sender = aliased(User)
+    receiver = aliased(User)
+    stmt = (
+        select(
+            FriendRequest.id,
+            FriendRequest.from_user_id,
+            FriendRequest.to_user_id,
+            sender.email.label("from_user_email"),
+            receiver.email.label("to_user_email"),
+            FriendRequest.status,
+            FriendRequest.created_at,
+            FriendRequest.updated_at,
+        )
+        .join(sender, FriendRequest.from_user_id == sender.id)
+        .join(receiver, FriendRequest.to_user_id == receiver.id)
+        .where(
+            FriendRequest.to_user_id == user_id,
+            FriendRequest.status == FriendRequestStatus.pending,
+        )
+    )
+    return db.execute(stmt).mappings().all()
 
 
 def get_sent_requests(db: Session, user_id: int):
-    return db.query(FriendRequest).filter(
-        FriendRequest.from_user_id == user_id,
-        FriendRequest.status == FriendRequestStatus.pending
-    ).all()
+    sender = aliased(User)
+    receiver = aliased(User)
+    stmt = (
+        select(
+            FriendRequest.id,
+            FriendRequest.from_user_id,
+            FriendRequest.to_user_id,
+            sender.email.label("from_user_email"),
+            receiver.email.label("to_user_email"),
+            FriendRequest.status,
+            FriendRequest.created_at,
+            FriendRequest.updated_at,
+        )
+        .join(sender, FriendRequest.from_user_id == sender.id)
+        .join(receiver, FriendRequest.to_user_id == receiver.id)
+        .where(
+            FriendRequest.from_user_id == user_id,
+            FriendRequest.status == FriendRequestStatus.pending,
+        )
+    )
+    return db.execute(stmt).mappings().all()
 
 
 def cancel_sent_request(db: Session, request_id: int, user_id: int):

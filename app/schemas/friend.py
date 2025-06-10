@@ -18,6 +18,8 @@ class FriendRequestResponse(BaseModel):
     id: int
     from_user_id: int
     to_user_id: int
+    from_user_email: str | None = None
+    to_user_email: str | None = None
     status: FriendRequestStatus
     created_at: datetime
     updated_at: datetime
