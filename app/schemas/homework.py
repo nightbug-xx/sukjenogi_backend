@@ -10,6 +10,7 @@ class HomeworkTypeCreate(BaseModel):
     reset_type: str
     reset_time: Optional[time] = None
     clear_count: Optional[int] = 0
+    is_public: bool = False
 
 class HomeworkTypeResponse(BaseModel):
     id: int
@@ -18,6 +19,7 @@ class HomeworkTypeResponse(BaseModel):
     reset_type: str
     reset_time: time
     clear_count: int
+    is_public: bool
     created_at: datetime
 
     class Config:
@@ -35,6 +37,7 @@ class HomeworkTypeUpdateRequest(BaseModel):
     description: str | None = None
     reset_type: constr(min_length=1)
     clear_count: conint(ge=1)
+    is_public: bool
 
 class HomeworkTypeDetailResponse(BaseModel):
     id: int
@@ -44,6 +47,7 @@ class HomeworkTypeDetailResponse(BaseModel):
     reset_type: str
     reset_time: time
     clear_count: int
+    is_public: bool
     created_at: datetime
 
     model_config = {

@@ -18,6 +18,8 @@ class FriendRequestResponse(BaseModel):
     id: int
     from_user_id: int
     to_user_id: int
+    from_user_email: str | None = None
+    to_user_email: str | None = None
     status: FriendRequestStatus
     created_at: datetime
     updated_at: datetime
@@ -31,6 +33,14 @@ class FriendResponse(BaseModel):
     user_id_1: int
     user_id_2: int
     created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+class FriendListItem(BaseModel):
+    id: int
+    email: str
 
     class Config:
         orm_mode = True
