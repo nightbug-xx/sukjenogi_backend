@@ -1,7 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.deps import get_db, get_current_user
-from app.schemas.friend import FriendRequestCreate, FriendRequestResponse, FriendResponse
+from app.schemas.friend import (
+    FriendRequestCreate,
+    FriendRequestResponse,
+    FriendResponse,
+    FriendListItem,
+)
 from app.schemas.character import CharacterResponse
 from app.services import friend_service
 from app.models.user import User
@@ -55,7 +60,7 @@ def respond_to_request(
     return {"detail": "요청을 처리했습니다."}
 
 
-@router.get("/list", response_model=list[int])
+@router.get("/list", response_model=list[FriendListItem])
 def get_friend_list(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
