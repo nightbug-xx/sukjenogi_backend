@@ -24,6 +24,7 @@ def register_homework_type(
         reset_type=homework_data.reset_type,
         reset_time=homework_data.reset_time or time(6, 0),
         clear_count=homework_data.clear_count or 0,
+        is_public=homework_data.is_public,
         created_at=datetime.utcnow(),
     )
     db.add(homework_type)
@@ -56,6 +57,7 @@ def update_homework_type(
     homework_type.description = req.description
     homework_type.reset_type = req.reset_type
     homework_type.clear_count = req.clear_count
+    homework_type.is_public = req.is_public
 
     db.commit()
     return {"message": "숙제가 수정되었습니다."}

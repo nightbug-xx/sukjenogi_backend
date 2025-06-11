@@ -10,6 +10,7 @@ class CharacterCreate(BaseModel):
     server: Optional[str] = None
     job: Optional[str] = None
     combat_power: Optional[int] = None  # ← 추가
+    is_public: bool = False
 
 # 캐릭터 응답용
 class CharacterResponse(BaseModel):
@@ -18,6 +19,7 @@ class CharacterResponse(BaseModel):
     server: Optional[str]
     job: Optional[str]
     combat_power: Optional[int]  # ← 추가
+    is_public: bool
     auto_synced_at: Optional[datetime]
     created_at: datetime
 
@@ -28,6 +30,7 @@ class CharacterUpdateRequest(BaseModel):
     name: constr(min_length=1)
     server: constr(min_length=1)
     power: conint(ge=0)  # 0 이상 정수
+    is_public: bool
 
 class CharacterDetailResponse(BaseModel):
     id: int
@@ -35,6 +38,7 @@ class CharacterDetailResponse(BaseModel):
     server: str
     combat_power: int
     user_id: int
+    is_public: bool
     created_at: datetime
     updated_at: datetime
 

@@ -10,6 +10,7 @@ def create_homework_type(user_id: int, data: HomeworkTypeCreate, db: Session):
         reset_type=data.reset_type,
         reset_time=data.reset_time,
         clear_count=data.clear_count,
+        is_public=data.is_public,
     )
     db.add(new_homework)
     db.commit()
