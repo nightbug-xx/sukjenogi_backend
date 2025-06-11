@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
+from sqlalchemy import select
 from app.models.friend import FriendRequest, Friend, FriendRequestStatus
 from app.models.user import User
 from app.models.character import Character, CharacterHomework
@@ -44,17 +45,51 @@ def send_friend_request(db: Session, from_user_id: int, to_user_email: str):
 
 
 def get_received_requests(db: Session, user_id: int):
-    return db.query(FriendRequest).filter(
-        FriendRequest.to_user_id == user_id,
-        FriendRequest.status == FriendRequestStatus.pending
-    ).all()
+    sender = aliased(User)
+    receiver = aliased(User)
+    stmt = (
+        select(
+            FriendRequest.id,
+            FriendRequest.from_user_id,
+            FriendRequest.to_user_id,
+            sender.email.label("from_user_email"),
+            receiver.email.label("to_user_email"),
+            FriendRequest.status,
+            FriendRequest.created_at,
+            FriendRequest.updated_at,
+        )
+        .join(sender, FriendRequest.from_user_id == sender.id)
+        .join(receiver, FriendRequest.to_user_id == receiver.id)
+        .where(
+            FriendRequest.to_user_id == user_id,
+            FriendRequest.status == FriendRequestStatus.pending,
+        )
+    )
+    return db.execute(stmt).mappings().all()
 
 
 def get_sent_requests(db: Session, user_id: int):
-    return db.query(FriendRequest).filter(
-        FriendRequest.from_user_id == user_id,
-        FriendRequest.status == FriendRequestStatus.pending
-    ).all()
+    sender = aliased(User)
+    receiver = aliased(User)
+    stmt = (
+        select(
+            FriendRequest.id,
+            FriendRequest.from_user_id,
+            FriendRequest.to_user_id,
+            sender.email.label("from_user_email"),
+            receiver.email.label("to_user_email"),
+            FriendRequest.status,
+            FriendRequest.created_at,
+            FriendRequest.updated_at,
+        )
+        .join(sender, FriendRequest.from_user_id == sender.id)
+        .join(receiver, FriendRequest.to_user_id == receiver.id)
+        .where(
+            FriendRequest.from_user_id == user_id,
+            FriendRequest.status == FriendRequestStatus.pending,
+        )
+    )
+    return db.execute(stmt).mappings().all()
 
 
 def cancel_sent_request(db: Session, request_id: int, user_id: int):
@@ -104,7 +139,9 @@ def get_friend_list(db: Session, user_id: int):
     result = []
     for f in friends:
         friend_id = f.user_id_2 if f.user_id_1 == user_id else f.user_id_1
-        result.append(friend_id)
+        friend = db.query(User).filter(User.id == friend_id).first()
+        friend_email = friend.email if friend else None
+        result.append({"id": friend_id, "email": friend_email})
 
     return result
 
@@ -151,13 +188,34 @@ def get_public_homeworks_of_friend_character(
     if not character:
         raise HTTPException(status_code=404, detail="공개된 캐릭터를 찾을 수 없습니다.")
 
-    # 3. 공개된 숙제만 조회
-    results = db.query(HomeworkType).join(CharacterHomework).filter(
-        CharacterHomework.character_id == character_id,
-        HomeworkType.is_public == True
-    ).all()
+    # 3. 공개된 숙제만 조회하며 완료 횟수도 포함
+    rows = (
+        db.query(
+            HomeworkType.id.label("homework_id"),
+            HomeworkType.title,
+            HomeworkType.reset_type,
+            HomeworkType.clear_count,
+            CharacterHomework.complete_cnt,
+        )
+        .join(CharacterHomework, CharacterHomework.homework_type_id == HomeworkType.id)
+        .filter(
+            CharacterHomework.character_id == character_id,
+            HomeworkType.is_public == True,
+        )
+        .order_by(HomeworkType.order.asc())
+        .all()
+    )
 
-    return results
+    return [
+        {
+            "homework_id": row[0],
+            "title": row[1],
+            "reset_type": row[2],
+            "clear_count": row[3],
+            "complete_cnt": row[4],
+        }
+        for row in rows
+    ]
 
 def delete_friend(db: Session, user_id: int, friend_id: int):
     user_ids = sorted([user_id, friend_id])

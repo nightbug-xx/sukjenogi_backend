@@ -21,6 +21,7 @@ def create_character(user_id: int, character_data: CharacterCreate, db: Session)
         server=character_data.server,
         job=character_data.job,
         combat_power=character_data.combat_power,  # ← 수동 입력 허용
+        is_public=character_data.is_public,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),
     )
