@@ -188,13 +188,34 @@ def get_public_homeworks_of_friend_character(
     if not character:
         raise HTTPException(status_code=404, detail="공개된 캐릭터를 찾을 수 없습니다.")
 
-    # 3. 공개된 숙제만 조회
-    results = db.query(HomeworkType).join(CharacterHomework).filter(
-        CharacterHomework.character_id == character_id,
-        HomeworkType.is_public == True
-    ).all()
+    # 3. 공개된 숙제만 조회하며 완료 횟수도 포함
+    rows = (
+        db.query(
+            HomeworkType.id.label("homework_id"),
+            HomeworkType.title,
+            HomeworkType.reset_type,
+            HomeworkType.clear_count,
+            CharacterHomework.complete_cnt,
+        )
+        .join(CharacterHomework, CharacterHomework.homework_type_id == HomeworkType.id)
+        .filter(
+            CharacterHomework.character_id == character_id,
+            HomeworkType.is_public == True,
+        )
+        .order_by(HomeworkType.order.asc())
+        .all()
+    )
 
-    return results
+    return [
+        {
+            "homework_id": row[0],
+            "title": row[1],
+            "reset_type": row[2],
+            "clear_count": row[3],
+            "complete_cnt": row[4],
+        }
+        for row in rows
+    ]
 
 def delete_friend(db: Session, user_id: int, friend_id: int):
     user_ids = sorted([user_id, friend_id])

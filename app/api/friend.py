@@ -8,7 +8,7 @@ from app.schemas.friend import (
     FriendListItem,
 )
 from app.schemas.character import CharacterResponse
-from app.schemas.homework import HomeworkTypeResponse
+from app.schemas.dashboard import DashboardHomework
 from app.services import friend_service
 from app.models.user import User
 
@@ -77,7 +77,10 @@ def get_friend_characters(
     return friend_service.get_public_characters_of_friend(db, current_user.id, friend_id)
 
 
-@router.get("/{friend_id}/characters/{character_id}/homeworks", response_model=list[HomeworkTypeResponse])
+@router.get(
+    "/{friend_id}/characters/{character_id}/homeworks",
+    response_model=list[DashboardHomework],
+)
 def get_friend_character_homeworks(
     friend_id: int,
     character_id: int,
